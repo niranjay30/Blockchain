@@ -10,7 +10,9 @@ class different_class:
     def __init__(self, my_string):
         self.string = my_string
     def __repr__(self):
-        return self.string + " " + str(self.num)    # for data tampering detection, "ALL" the attributes must be returned
+# for data tampering detection, "ALL" the attributes must be
+# returned
+        return self.string + " " + str(self.num)
 
 
 class block:
