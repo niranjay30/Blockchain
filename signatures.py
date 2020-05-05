@@ -14,7 +14,12 @@ def generate_keys():
         backend = default_backend()
     )
     public_key = private_key.public_key()
-    return private_key, public_key
+    # Serialization of public_key 
+    public_key_ser = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )    
+    return private_key, public_key_ser
 
 
 def signature(message, private_key):
@@ -30,10 +35,15 @@ def signature(message, private_key):
     return sign
 
 
-def verify(message, signature, public_key):
+def verify(message, signature, public_key_ser):
+	# Unserialization of public_key 
+    public = serialization.load_pem_public_key(
+        public_key_ser,
+        backend=default_backend()
+    )
     message = bytes(str(message), 'utf-8')
     try:
-        public_key.verify(
+        public.verify(      
             signature,
             message,
             padding.PSS(
