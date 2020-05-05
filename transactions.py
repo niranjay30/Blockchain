@@ -59,8 +59,8 @@ class transaction:
             if amt < 0:
                 return False
             total_out = total_out + amt
-        if total_out > total_in:
-            return False
+        #if total_out > total_in:
+            #return False
         return True
 
 
@@ -71,7 +71,24 @@ class transaction:
         data.append(self.output_addresses)
         data.append(self.required_addresses)
         return data
-        
+    
+    
+    def __repr__(self):
+		reprstr = "Inputs:\n"
+		for addr, amt in self.inputs:
+			reprstr = reprstr + str(amt) + " from " + str(addr) + "\n"
+		reprstr = reprstr + "Outputs:\n"
+		for addr, amt in self.outputs:
+			reprstr = reprstr + str(amt) + " to " + str(addr) + "\n"
+		reprstr = reprstr + "Required:\n"
+		for r in self.required:
+			reprstr = reprstr + str(r) + "\n"
+		reprstr = reprstr + "Signatures:\n"
+		for s in self.signatures:
+			reprstr = reprstr + str(s) + "\n"
+		reprstr = reprstr + "End \n"
+		return reprstr
+    
 
 if __name__ == "__main__":
     pr1, pu1 = signatures.generate_keys()
