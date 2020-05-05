@@ -35,6 +35,12 @@ class block:
         digest.update(bytes(str(self.previous_hash), 'utf-8'))
         hash = digest.finalize()
         return hash
+    
+    
+    def is_valid(self):
+        if self.previous_block == None:
+        	return True
+        return self.previous_block.compute_hash() == self.previous_hash
 
 
 if __name__ == '__main__':
