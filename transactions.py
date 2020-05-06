@@ -3,44 +3,44 @@
 import signatures
 
 class transaction:
-    input_addresses = None
-    output_address = None
-    signature = None
-    required_addresses = None
+    inputs = None
+    outputs = None
+    signatures = None
+    required = None
 
 
     def __init__(self):
-        self.input_addresses = []
-        self.output_addresses = []
-        self.signature = []
-        self.required_addresses = []
+        self.inputs = []
+        self.outputs = []
+        self.signatures = []
+        self.required = []
 
 
     def add_input(self, from_address, amount):
-        self.input_addresses.append((from_address, amount))
+        self.inputs.append((from_address, amount))
 
     
     def add_output(self, to_address, amount):
-        self.output_addresses.append((to_address, amount))
+        self.outputs.append((to_address, amount))
 
     
     def add_required(self, address):
-        self.required_addresses.append(address)
+        self.required.append(address)
 
     
     def sign(self, private):
         message = self.__gather()
         new_signature = signatures.signature(message, private)
-        self.signature.append(new_signature)
+        self.signatures.append(new_signature)
     
     
     def is_valid(self):
         total_in = 0
         total_out = 0
         message = self.__gather()
-        for addr,amt in self.input_addresses:
+        for addr,amt in self.inputs:
             found = False
-            for s in self.signature:
+            for s in self.signatures:
                 if signatures.verify(message, s, addr):
                     found = True
             if amt < 0:
@@ -48,14 +48,14 @@ class transaction:
             if not found:
                 return False
             total_in = total_in + amt
-        for addr in self.required_addresses:
+        for addr in self.required:
             found = False
-            for s in self.signature:
+            for s in self.signatures:
                 if signatures.verify(message, s, addr):
                     found = True
             if not found:
                 return False
-        for addr,amt in self.output_addresses:
+        for addr,amt in self.outputs:
             if amt < 0:
                 return False
             total_out = total_out + amt
@@ -67,9 +67,9 @@ class transaction:
     #private method: only used in this class therefore the double underscores "__" in prefix
     def __gather(self):
         data = []
-        data.append(self.input_addresses)
-        data.append(self.output_addresses)
-        data.append(self.required_addresses)
+        data.append(self.inputs)
+        data.append(self.outputs)
+        data.append(self.required)
         return data
     
     
