@@ -9,10 +9,12 @@ import socket
 
 tcp_port = 5005
 
-def send_block(ip_address, block):
+def send_object(ip_address, obj):
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((ip_address, tcp_port))
-	s.send(block)
+	data = pickle.dumps(obj)
+	s.send(data)
+	s.close()
 	return False
 	
 	
@@ -38,7 +40,8 @@ if __name__ == "__main__":
 	B1.add_txn(tx1)
 	B1.add_txn(tx2)
 	
-	send_block('localhost', B1)
+	send_object('localhost', B1)
+	send_object('localhost', tx2)
 	
 	
 	
