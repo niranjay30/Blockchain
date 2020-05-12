@@ -3,7 +3,7 @@
 import socket_utils
 import transactions
 import transaction_block
-
+import pickle
 
 wallets = [("localhost", 5006)]
 txn_list = []
@@ -51,22 +51,41 @@ def nonce_finder(wallet_list, miner_public):
 		# Find the nonce
 		if verbose:
 			print("Finding nonce...")
-		new_block.find_nonce(10000)
+		new_block.find_nonce(10000)	
+			
 		if new_block.good_nonce():
 			if verbose:
 				print("Good nonce found!")
+			head_blocks.remove(new_block.previous_block)	
+			head_blocks.append(new_block)
+		
 			# Send new block
+			save_previous = new_block.previous_block
+			new_block.previous_block = None
 			for ip_addr, port in wallet_list:
 				if verbose:
 					print("Sending to " + ip_addr + ":" + str(port))
 				socket_utils.send_object(ip_addr,new_block,5006)
-			head_blocks.remove(new_block.previous_block)
-			head_blocks.append(new_block)
-		
+			new_block.previous_block = save_previous
 			for txn in new_block.data:
 				if txn != mine_reward:
 					txn_list.remove(txn)
 	return True
+
+		
+def save_txn_list(the_list, filename):
+	fp = open(filename, "wb")
+	pickle.dump(the_list, fp)
+	fp.close()
+	return True
+
+		
+def load_txn_list(filename):
+	fin = open(filename, "rb")
+	ret = pickle.load(fin)
+	fin.close()
+	return ret
+    
 		
 if __name__ == "__main__":
 	
@@ -105,13 +124,16 @@ if __name__ == "__main__":
 	#print(tx1.is_valid())
 	#print(tx2.is_valid())
 	
-	try:
-		socket_utils.send_object('localhost', tx1)
-		print("Sent tx1.")
-		socket_utils.send_object('localhost', tx2)
-		print("Sent tx2.")
-	except:
-		print("Error! Connection unsuccessful")
+	new_tx_list = [tx1, tx2]
+	save_txn_list(new_tx_list, "txns.dat")
+	new_new_txn_list = load_txn_list("txns.dat")
+    
+	for txn in new_new_txn_list:	
+		try:
+			socket_utils.send_object('localhost', txn)
+			print("Transaction sent.")
+		except:
+			print("Error! Connection unsuccessful")
 	
 
 	for i in range(40):
