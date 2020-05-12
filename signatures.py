@@ -19,6 +19,7 @@ def generate_keys():
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )    
     return private_key, public_key_ser
+    
 
 def sign(message, private_key):
     message = bytes(str(message), 'utf-8')
@@ -31,6 +32,7 @@ def sign(message, private_key):
         hashes.SHA256()
     )
     return signature 
+    
 
 def verify(message, signature, public_key_ser):
 	# Unserialization of public_key 
@@ -56,6 +58,43 @@ def verify(message, signature, public_key_ser):
     except:
         print("Error executing public_key.verify")
         return False
+        
+        
+def save_private(pr_key, filename):
+    pem = pr_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+    fp = open(filename, "wb")
+    fp.write(pem)
+    fp.close()
+    return
+    
+   
+def load_private(filename):
+    fin = open(filename, "rb")
+    pr_key = serialization.load_pem_private_key(
+        fin.read(),
+        password=None,
+        backend=default_backend()
+    )
+    fin.close()
+    return pr_key
+    
+
+def save_public(pu_key, filename):
+    fp = open(filename, "wb")
+    fp.write(pu_key)
+    fp.close()
+    return True
+    
+
+def load_public(filename):
+    fin = open(filename, "rb")
+    pu_key = fin.read()
+    fin.close()
+    return pu_key
     
 
 if __name__ == '__main__':
@@ -91,6 +130,24 @@ if __name__ == '__main__':
         print("Success! Tampering detected")
     
     
+    save_private(pr2, "private.key")
+    pr_load = load_private("private.key")
+    sig3 = sign(message, pr_load)
+    correct = verify(message, sig3, pu2)
+    
+    if correct:
+        print("Success! Loaded private key is good.")
+    else:
+        print ("Error! Loaded private key is bad.")
+
+    save_public(pu2, "public.key")
+    pu_load = load_public("public.key")
+    correct = verify(message, sig3, pu_load)
+    
+    if correct:
+        print("Success! Loaded public key is good.")
+    else:
+        print ("Error! Loaded public key is bad.")
     
         
     
