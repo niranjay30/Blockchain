@@ -9,3 +9,6 @@ At the same time, we are also witnessing the rise of quantum computing. It is cl
 In this project, I intend to implement a blockchain model and will assess the presented claims about quantum computing as a threat to blockchain.
 
 So to understand the workings of a blockchain to the tiniest working fundamentals, I'm implementing this blockchain by which I should be able to understand the nitty-gritty of it and then manipulate it accordingly, to find the probable vulnerabilities.
+
+
+P.S. - Please feel free to correct me anywhere in this repository if you feel like as I'm not an expert in either of the two i.e., python or blockchain.
