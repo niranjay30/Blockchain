@@ -96,6 +96,10 @@ def load_public(filename):
     fin.close()
     return pu_key
     
+    
+def load_keys(pr_file, pu_file):
+	return load_private(pr_file), load_public(pu_file)
+    
 
 if __name__ == '__main__':
     pr, pu = generate_keys()
