@@ -14,8 +14,8 @@ class txn:
 		self.signatures = []
 		self.required = []
 	
-	def add_input(self, from_address, amount):
-		self.inputs.append((from_address, amount))
+	def add_input(self, from_address, amount, index):
+		self.inputs.append((from_address, amount, index))
 		
 	def add_output(self, to_address, amount):
 		self.outputs.append((to_address, amount))
@@ -32,7 +32,7 @@ class txn:
 		total_in = 0
 		total_out = 0
 		message = self.__gather()
-		for address, amount in self.inputs:
+		for address, amount, inx in self.inputs:
 			found = False
 			for s in self.signatures:
 				if signatures.verify(message, s, address):
@@ -68,8 +68,8 @@ class txn:
 		
 	def __repr__(self):
 		reprstr = "Inputs:\n"
-		for addr, amt in self.inputs:
-			reprstr = reprstr + str(amt) + " from " + str(addr) + "\n"
+		for addr, amt, inx in self.inputs:
+			reprstr = reprstr + str(amt) + " from " + str(addr) + " inx = " + str(inx) + "\n"
 		reprstr = reprstr + "Outputs:\n"
 		for addr, amt in self.outputs:
 			reprstr = reprstr + str(amt) + " to " + str(addr) + "\n"
@@ -138,12 +138,14 @@ if __name__ == '__main__':
 	tx6.add_output(pu2, 1.1)
 	tx6.sign(pr3)
 	
-	# Output exceeds the input : only for now but change this after implementing mining
+	# Tampered index
 	tx7 = txn()
-	tx7.add_input(pu4, 1.2)
-	tx7.add_output(pu2, 1)
-	tx7.add_output(pu1, 2)
-	tx7.sign(pr4) 
+	tx7.add_input(pu3, 1)
+	tx7.add_input(pu4, 0.1)
+	tx7.add_output(pu1, 1.1)
+	tx7.sign(pr3)
+	temp = tx7.inputs[0]
+	tx7.inputs[0] = (temp[0], temp[1], 78)
 	
 	# Negative amount 
 	tx8 = txn()
