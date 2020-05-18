@@ -14,7 +14,7 @@ class txn:
 		self.signatures = []
 		self.required = []
 	
-	def add_input(self, from_address, amount, index):
+	def add_input(self, from_address, amount, index = 0):
 		self.inputs.append((from_address, amount, index))
 		
 	def add_output(self, to_address, amount):
