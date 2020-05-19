@@ -178,6 +178,46 @@ def get_last_txn_index (pu_key, head_block):
             break
         this_block = this_block.previous_block
     return index
+    
+    
+def process_new_block(new_block, head_blocks, verbose):
+    if verbose: print("Recieved block")
+    found = False
+    for b in head_blocks:
+        if b == None:
+            if new_block.previous_hash == None:
+                found = True
+                new_block.previous_block = b
+                if not new_block.is_valid():
+                    print("Error! new_block is invalid.")
+                else:
+                    head_blocks.remove(b)
+                    head_blocks.append(new_block)
+                    if verbose: print("Added to head_blocks.")
+                
+        elif new_block.previous_hash == b.compute_hash():
+            found = True
+            new_block.previous_block = b
+            if not new_block.is_valid():
+                print("Error! new_block is invalid.")
+            else:
+                head_blocks.remove(b)
+                head_blocks.append(new_block)
+                if verbose: print("Added to head_blocks")
+               
+        else:
+            this_block = b
+            while this_block != None:
+                if new_block.previous_hash == this_block.previous_hash:
+                    found = True
+                    new_block.previous_block = this_block.previous_block
+                    if not new_block in head_blocks:
+                        head_blocks.append(new_block)
+                        if verbose: print("Added new sister block")
+
+                this_block = this_block.previous_block
+        if not found:
+            print ("Error! Couldn't find a parent for new_block")
             
 
 if __name__ == '__main__':
@@ -252,6 +292,7 @@ if __name__ == '__main__':
         print("Error! Mining is too fast.")
     if B1.good_nonce():
         print("Success! Nonce is good.")
+        print (B1.nonce)
     else:
         print("Error! Nonce is bad.")
 

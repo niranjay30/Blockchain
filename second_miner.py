@@ -21,7 +21,7 @@ t1.join()
 t2.join()
 
 
-print(ord(transaction_block.find_longest_blockchain(miner.head_blocks).previousBlock.previous_block.nonce[0]))
+print(ord(transaction_block.find_longest_blockchain(miner.head_blocks).previous_block.previous_block.nonce[0]))
 
 print(ord(transaction_block.find_longest_blockchain(miner.head_blocks).previous_block.nonce[0]))
 

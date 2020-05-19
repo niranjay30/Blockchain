@@ -9,11 +9,11 @@ import signatures
 head_blocks = [None]
 wallets = [('localhost',5006)]
 miners = [('localhost',5005), ('localhost', 5007)]
+miners = [('localhost',5005)]
 break_now = False
 verbose = True
 my_public,my_private = signatures.generate_keys()
 txn_index = {}
-
 
 def thief(my_addr):
     my_ip, my_port = my_addr
@@ -50,42 +50,8 @@ def wallet_server(my_addr):
     while not break_now:
         new_block = socket_utils.recv_object(server)
         if isinstance(new_block,transaction_block.txn_block):
-            if verbose: print("Recieved block")
-            found = False
-            for b in head_blocks:
-                if b == None:
-                    if new_block.previous_hash == None:
-                        found = True
-                        new_block.previous_block = b
-                        if not new_block.is_valid():
-                            print("Error! new_block is not valid")
-                        else:
-                            head_blocks.remove(b)
-                            head_blocks.append(new_block)
-                            if verbose: print("Added to head_blocks")
-                elif new_block.previous_hash == b.compute_hash():
-                    found = True
-                    new_block.previous_block = b
-                    if not new_block.is_valid():
-                        print("Error! new_block is not valid")
-                    else:
-                        head_blocks.remove(b)
-                        head_blocks.append(new_block)
-                        if verbose: print("Added to head_blocks")
-                else:
-                    this_block = b
-                    while this_block != None:
-                        if new_block.previous_hash == this_block.previous_hash:
-                            found = True
-                            new_block.previous_block = this_block.previous_block
-                            if not new_block in head_blocks:
-                                head_blocks.append(new_block)
-                                if verbose: print("Added new sister block")
+            transaction_block.process_new_block(new_block, head_blocks, True)
 
-                        this_block = this_block.previous_block
-                if not found:
-                    print ("Error! Couldn't find a parent for new_block")
-                    #TODO handle orphaned blocks 
     server.close()
     transaction_block.save_blocks(head_blocks,"AllBlocks.dat")
     fp = open("txn_index.dat", "wb")

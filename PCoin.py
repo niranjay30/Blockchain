@@ -9,8 +9,9 @@ import transaction_block
 
 wallets = []
 miners = []
-my_ip = "127.0.0.1"
+my_ip = "localhost"
 wallets.append((my_ip, 5006))
+wallets.append((my_ip, 5007))
 miners.append((my_ip, 5005))
 
 tms = None
@@ -67,12 +68,15 @@ def get_balance (pu_key):
 	
 
 def send_coins (pu_recv, amt, txn_fee):
-	wallet.send_coins(wallet.my_public, amt+txn_fee, wallet.my_private, pu_recv, amt, miners)
+	wallet.send_coins(wallet.my_public, amt+txn_fee, wallet.my_private, pu_recv, amt)
 	return True
 
 
 def make_new_keys ():
-	return None, None
+	wallet.my_private, wallet.my_public = signatures.generate_keys()
+	signatures.save_public(wallet.my_public, "public.key")
+	signatures.save_private(wallet.my_private, "private.key")
+	return None
 
 if __name__ == "__main__":
 	
@@ -97,7 +101,7 @@ if __name__ == "__main__":
 	stop_miner()
 	
 	
-	print(ord(transaction_block.find_longest_blockchain(miner.head_blocks).previousBlock.previous_block.nonce[0]))
+	print(ord(transaction_block.find_longest_blockchain(miner.head_blocks).previous_block.previous_block.nonce[0]))
 
 	print(ord(transaction_block.find_longest_blockchain(miner.head_blocks).previous_block.nonce[0]))
 
